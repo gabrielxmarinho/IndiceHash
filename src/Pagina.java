@@ -1,16 +1,16 @@
 import java.util.LinkedList;
 
 public class Pagina {
-	private Tupla tuplas[];
+	private LinkedList<Tupla> tuplas;
 	
-	public Pagina(int qtd) {
-		this.tuplas = new Tupla[qtd];
+	public Pagina() {
+		this.tuplas = new LinkedList<Tupla>();
 	}
 	
-	public Tupla[] getTuplas() {
+	public LinkedList<Tupla> getTuplas() {
 		return tuplas;
 	}
-	public void setTuplas(Tupla[] tuplas) {
+	public void setTuplas(LinkedList<Tupla> tuplas) {
 		this.tuplas = tuplas;
 	}
 }
