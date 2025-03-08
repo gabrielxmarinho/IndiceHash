@@ -83,6 +83,7 @@ public class IndiceHash {
 		}
 	}
 	
+	//Busca pelo Índice
 	public int chaveBusca(String chave) throws Exception {
 		int qtd = 0;
 		int hash = this.funcaoHash(chave);
@@ -101,8 +102,23 @@ public class IndiceHash {
 		throw new Exception("Registro não encontrado");
 	}
 	
-	public void tableScan(String chave) {
-		
+	//Full Table Scan
+	public int tableScan(String chave) throws Exception {
+		int qtd = 0;
+		for(int i=0;i<this.tabela.getPaginas().length;i++) {
+			//Verificando se a página foi preenchida
+			if(this.tabela.getPaginas()[i]!=null) {
+				for(int j=0;j<this.tabela.getPaginas()[i].size();j++) {
+					for(int k=0;k<this.tabela.getPaginas()[i].get(j).getTuplas().size();k++) {
+						qtd++;
+						if(this.tabela.getPaginas()[i].get(j).getTuplas().get(k).getChave().equals(chave)) {
+							return qtd;
+						}
+					}
+				}
+			}
+		}
+		throw new Exception("Registro não encontrado");
 	}
 	
 }
