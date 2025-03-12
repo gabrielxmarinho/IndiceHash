@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 public class InterfaceGrafica {
 
-    private IndiceHash indice;
+    private Tabela tabela;
     private JTextArea resultArea;
     private JTextField chaveBuscaField;
 
@@ -21,7 +21,7 @@ public class InterfaceGrafica {
         frame.setLayout(new BorderLayout());
 
         // Inicializa o índice hash (exemplo de arquivo)
-        indice = new IndiceHash("C:\\Users\\Luan\\Documents\\Banco de dados\\words.txt");
+        tabela = new Tabela("C:\\Users\\User\\Downloads\\words.txt");
 
         // Painel para os controles (campo de busca e botões)
         JPanel controlPanel = new JPanel();
@@ -70,20 +70,20 @@ public class InterfaceGrafica {
 
         try {
             // Contando as buscas pelo índice
-            int qtdBuscaIndice = indice.chaveBusca(chave);
+            int qtdBuscaIndice = tabela.chaveBusca(chave);
 
             // Contando as buscas pelo table scan
-            int qtdBuscaTabela = indice.tableScan(chave);
+            int qtdBuscaTabela = tabela.tableScan(chave);
 
             // Calcula as taxas de colisões e overflow
-            double taxaColisoes = 100 * (double) indice.getNColisoes() / indice.getNumRegistros();
-            double taxaOverflow = 100 * (double) indice.getNBucketOverflow() / indice.getBucketsLength();
+            double taxaColisoes = 100 * (double) tabela.getNColisoes() / tabela.getPaginasLength();
+            double taxaOverflow = 100 * (double) tabela.getNBucketOverflow() / tabela.getBucketsLength();
 
             // Exibe os resultados na área de texto
             String resultadoBusca = "Busca pelo Índice:\n";
-            resultadoBusca += "Chave encontrada após " + qtdBuscaIndice + " buscas no índice.\n";
+            resultadoBusca += "Chave encontrada após " + qtdBuscaIndice + " páginas no índice.\n";
             resultadoBusca += "\nBusca pelo Table Scan:\n";
-            resultadoBusca += "Chave encontrada após " + qtdBuscaTabela + " buscas na tabela.\n";
+            resultadoBusca += "Chave encontrada após " + qtdBuscaTabela + " páginas na tabela.\n";
             resultadoBusca += String.format("\nTaxa de Colisões = %.6f%%\n", taxaColisoes);
             resultadoBusca += String.format("Taxa de Buckets Overflow = %.6f%%\n", taxaOverflow);
             resultArea.setText(resultadoBusca);
@@ -91,9 +91,9 @@ public class InterfaceGrafica {
         } catch (Exception e) {
             try {
                 // Caso o índice falhe, fazemos a busca completa no table scan
-                int qtdBuscaTabela = indice.tableScan(chave);
-                double taxaColisoes = 100 * (double) indice.getNColisoes() / indice.getNumRegistros();
-                double taxaOverflow = 100 * (double) indice.getNBucketOverflow() / indice.getBucketsLength();
+                int qtdBuscaTabela = tabela.tableScan(chave);
+                double taxaColisoes = 100 * (double) tabela.getNColisoes() / tabela.getPaginasLength();
+                double taxaOverflow = 100 * (double) tabela.getNBucketOverflow() / tabela.getBucketsLength();
 
                 // Exibe os resultados do table scan na área de texto
                 String resultadoBusca = "Chave não encontrada no índice. Busca completa na tabela realizada após " + qtdBuscaTabela + " buscas.\n";
@@ -102,6 +102,7 @@ public class InterfaceGrafica {
                 resultArea.setText(resultadoBusca);
 
             } catch (Exception ex) {
+            	System.out.println(e.getMessage());
                 resultArea.setText("Chave não encontrada.");
             }
         }

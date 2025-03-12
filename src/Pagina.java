@@ -2,7 +2,7 @@ import java.util.LinkedList;
 
 public class Pagina {
 	private LinkedList<Tupla> tuplas;
-	
+
 	public Pagina() {
 		this.tuplas = new LinkedList<Tupla>();
 	}
