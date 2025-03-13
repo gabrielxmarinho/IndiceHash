@@ -1,15 +1,15 @@
 import java.util.LinkedList;
 
 public class Bucket {
-	private LinkedList<Pagina> paginas;
+	private LinkedList<Integer> numerosPaginas;
 	
 	public Bucket() {
-		this.paginas = new LinkedList<Pagina>();
+		this.numerosPaginas = new LinkedList<Integer>();
 	}
-	public LinkedList<Pagina> getPaginas() {
-		return paginas;
+	public LinkedList<Integer> getNumerosPaginas() {
+		return numerosPaginas;
 	}
-	public void setPaginas(LinkedList<Pagina> paginas) {
-		this.paginas = paginas;
+	public void setNumerosPaginas(LinkedList<Integer> paginas) {
+		this.numerosPaginas = paginas;
 	}
 }	
