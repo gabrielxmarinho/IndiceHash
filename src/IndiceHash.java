@@ -10,7 +10,7 @@ public class IndiceHash {
     
     public int funcaoHash(String chaveBusca) {
     	//Função Hash deve ser simples e com baixas métricas de Colisão e Bucket Overflow
-    	// Converte os primeiros caracteres da string em números e faz operações matemáticas
+    	// Convertendo os caracteres em códigos ASCII
         int a = chaveBusca.length() > 0 ? chaveBusca.charAt(0) * 31 : 0;
         int b = chaveBusca.length() > 1 ? chaveBusca.charAt(1) * 17 : 0;
         int c = chaveBusca.length() > 2 ? chaveBusca.charAt(2) * 13 : 0;
@@ -132,10 +132,12 @@ public class IndiceHash {
         for (int i = 0; i < this.buckets[hash].size(); i++) {
             for (int j = 0; j < this.buckets[hash].get(i).getNumerosPaginas().size(); j++) {
             	qtd++;
-            	for(int k = 0; k < tabela.getPaginas().get(buckets[hash].get(i).getNumerosPaginas().get(j)).getTuplas().size(); k++) {
-            		if(tabela.getPaginas().get(this.buckets[hash].get(i).getNumerosPaginas().get(j)).getTuplas().get(k).getChave().equals(chave)) {
-                		teste = true;
-                	}
+            	Pagina pagina = tabela.getPaginas().get(buckets[hash].get(i).getNumerosPaginas().get(j));
+    			LinkedList<Tupla> tuplas = pagina.getTuplas();
+    			for(int x=0;x<tuplas.size();x++) {
+    				if(tuplas.get(x).getChave().equals(chave)) {
+    					teste = true;
+    				}
     			}
             }
         }
@@ -153,17 +155,18 @@ public class IndiceHash {
         		for(int j=0;j<buckets[i].size();j++) {
             		for(int k=0;k<buckets[i].get(j).getNumerosPaginas().size();k++) {
             			qtd++;
-            			for(int w = 0; w < tabela.getPaginas().get(buckets[i].get(j).getNumerosPaginas().get(k)).getTuplas().size();w++) {
-            				if(tabela.getPaginas().get(buckets[i].get(j).getNumerosPaginas().get(k)).getTuplas().get(w).getChave().equals(chave)) {
-                				teste = true;
-                				break;
-                			}
+            			Pagina pagina = tabela.getPaginas().get(buckets[i].get(j).getNumerosPaginas().get(k));
+            			LinkedList<Tupla> tuplas = pagina.getTuplas();
+            			for(int x=0;x<tuplas.size();x++) {
+            				if(tuplas.get(x).getChave().equals(chave)) {
+            					teste = true;
+            				}
             			}
             		}
             	}
         	}
         }
-        if(teste == true) {
+        if(teste == false) {
         	throw new Exception("Chave não Encontrada");
         }
         return qtd;
