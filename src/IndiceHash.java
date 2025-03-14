@@ -9,7 +9,17 @@ import java.util.Scanner;
 public class IndiceHash {
     
     public int funcaoHash(String chaveBusca) {
-        return Math.abs(chaveBusca.hashCode())%(buckets.length);
+    	//Função Hash deve ser simples e com baixas métricas de Colisão e Bucket Overflow
+    	// Converte os primeiros caracteres da string em números e faz operações matemáticas
+        int a = chaveBusca.length() > 0 ? chaveBusca.charAt(0) * 31 : 0;
+        int b = chaveBusca.length() > 1 ? chaveBusca.charAt(1) * 17 : 0;
+        int c = chaveBusca.length() > 2 ? chaveBusca.charAt(2) * 13 : 0;
+        int d = chaveBusca.length() > 3 ? chaveBusca.charAt(3) * 7  : 0;
+        
+        // Combinação matemática sem operadores lógicos
+        int hash = (a + b + c + d) * 33;
+
+        return Math.abs(hash) % (this.buckets.length); 
     }
     private Tabela tabela;
     private long numRegistros;
@@ -41,20 +51,21 @@ public class IndiceHash {
                     buckets[hash] = new LinkedList<Bucket>();
                     buckets[hash].add(new Bucket());
                     buckets[hash].get(buckets[hash].size()-1).getNumerosPaginas().add(tabela.getPaginas().size());
-                    //Zero pois a página e o Bucket acabaram de ser criados
-                    //Aponta para o primeiro endereço desse Bucket
                     Pagina novaPagina = new Pagina();
                     novaPagina.getTuplas().add(new Tupla(linha));
                     tabela.getPaginas().add(novaPagina);
                 } else {
+                	//Ultimo Bucket apontado por aquele hash
                 	int bucketIndex = buckets[hash].size()-1;
+                	//Ultima página para onde o último bucket dessa posição aponta
                 	int paginaIndex = buckets[hash].get(bucketIndex).getNumerosPaginas().get(buckets[hash].get(bucketIndex).getNumerosPaginas().size()-1);
+                	
                 	if(tabela.getPaginas().get(paginaIndex).getTuplas().size()<this.tamanhoPagina) {
             			tabela.getPaginas().get(paginaIndex).getTuplas().add(new Tupla(linha));
             		}else {
             			//Bucket Overflow
             			if (buckets[hash].get(bucketIndex).getNumerosPaginas().size() == this.tamanhoBucket) {
-                        	buckets[hash].add(new Bucket());
+            				buckets[hash].add(new Bucket());
                         	buckets[hash].get(buckets[hash].size()-1).getNumerosPaginas().add(tabela.getPaginas().size());
                             Pagina novaPagina = new Pagina();
                             novaPagina.getTuplas().add(new Tupla(linha));
@@ -135,15 +146,25 @@ public class IndiceHash {
     }
     //Percorrer o total de páginas
     public int tableScan(String chave) throws Exception {
+    	boolean teste = false;
         int qtd = 0;
         for(int i=0;i<buckets.length;i++) {
         	if(buckets[i]!=null) {
         		for(int j=0;j<buckets[i].size();j++) {
             		for(int k=0;k<buckets[i].get(j).getNumerosPaginas().size();k++) {
             			qtd++;
+            			for(int w = 0; w < tabela.getPaginas().get(buckets[i].get(j).getNumerosPaginas().get(k)).getTuplas().size();w++) {
+            				if(tabela.getPaginas().get(buckets[i].get(j).getNumerosPaginas().get(k)).getTuplas().get(w).getChave().equals(chave)) {
+                				teste = true;
+                				break;
+                			}
+            			}
             		}
             	}
         	}
+        }
+        if(teste == true) {
+        	throw new Exception("Chave não Encontrada");
         }
         return qtd;
     }
