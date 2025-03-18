@@ -8,6 +8,9 @@ public class InterfaceGrafica {
     private IndiceHash indice;
     private JTextArea resultArea;
     private JTextField chaveBuscaField;
+    private JTextField tamanhoPagina;
+    private JTextField tamanhoBucket;
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new InterfaceGrafica().criarInterface());
@@ -25,11 +28,14 @@ public class InterfaceGrafica {
 
         // Painel para os controles (campo de busca e botões)
         JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new FlowLayout());
+        controlPanel.setLayout(new GridLayout(7, 1, 10, 10));
 
         // Campo para inserir chave de busca
         chaveBuscaField = new JTextField(20);
         chaveBuscaField.setToolTipText("Digite a chave para busca");
+
+        tamanhoPagina = new JTextField();
+        tamanhoBucket = new JTextField();
 
         // Botões para ações
         JButton btnBuscarChave = new JButton("Buscar Chave");
@@ -43,8 +49,17 @@ public class InterfaceGrafica {
         });
 
         // Adicionando componentes ao painel de controles
+        controlPanel.add(new JLabel("Digite a chave:"));
         controlPanel.add(chaveBuscaField);
+
+        controlPanel.add(new JLabel("Digite o tamanho da página:"));
+        controlPanel.add(tamanhoPagina);
+
+        controlPanel.add(new JLabel("Digite o tamanho do bucket:"));
+        controlPanel.add(tamanhoBucket);
+
         controlPanel.add(btnBuscarChave);
+
 
         // Área para exibir os resultados
         resultArea = new JTextArea();
