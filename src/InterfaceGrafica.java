@@ -1,40 +1,44 @@
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
 public class InterfaceGrafica {
 
     private IndiceHash indice;
     private JTextArea resultArea;
     private JTextField chaveBuscaField;
+    private JTextField tamanhoPaginaField;
+    private JTextField tamanhoBucketField;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new InterfaceGrafica().criarInterface());
     }
 
     public void criarInterface() {
-        // Criar a janela principal
         JFrame frame = new JFrame("Visualizador de Índice Hash");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(600, 500);
         frame.setLayout(new BorderLayout());
 
-        // Inicializa o índice hash (exemplo de arquivo)
-        indice = new IndiceHash("C:\\Users\\Luan\\Documents\\Banco de dados\\words.txt");
+        // Inicializa os JTextField corretamente
+        tamanhoPaginaField = new JTextField();
+        tamanhoBucketField = new JTextField();
 
-        // Painel para os controles (campo de busca e botões)
+        // Extração segura dos valores para evitar NumberFormatException
+        int tamanhoPagina = !tamanhoPaginaField.getText().trim().isEmpty() ? Integer.parseInt(tamanhoPaginaField.getText().trim()) : 10;
+        int tamanhoBucket = !tamanhoBucketField.getText().trim().isEmpty() ? Integer.parseInt(tamanhoBucketField.getText().trim()) : 10;
+
+        // Criação do objeto IndiceHash com valores válidos
+        indice = new IndiceHash("C:\\Users\\Luan\\Documents\\Banco de dados\\words.txt", tamanhoPagina, tamanhoBucket);
+
         JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new FlowLayout());
+        controlPanel.setLayout(new GridLayout(7, 1, 10, 10));
 
-        // Campo para inserir chave de busca
         chaveBuscaField = new JTextField(20);
         chaveBuscaField.setToolTipText("Digite a chave para busca");
 
-        // Botões para ações
         JButton btnBuscarChave = new JButton("Buscar Chave");
-
-        // Adicionando ações aos botões
         btnBuscarChave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -42,22 +46,22 @@ public class InterfaceGrafica {
             }
         });
 
-        // Adicionando componentes ao painel de controles
+        controlPanel.add(new JLabel("Digite a chave:"));
         controlPanel.add(chaveBuscaField);
+        controlPanel.add(new JLabel("Digite o tamanho da página:"));
+        controlPanel.add(tamanhoPaginaField);
+        controlPanel.add(new JLabel("Digite o tamanho do bucket:"));
+        controlPanel.add(tamanhoBucketField);
         controlPanel.add(btnBuscarChave);
 
-        // Área para exibir os resultados
         resultArea = new JTextArea();
         resultArea.setEditable(false);
         resultArea.setLineWrap(true);
         resultArea.setWrapStyleWord(true);
         JScrollPane scrollPane = new JScrollPane(resultArea);
 
-        // Adicionando o painel de controle e área de resultados ao frame
         frame.add(controlPanel, BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
-
-        // Exibir a janela
         frame.setVisible(true);
     }
 
@@ -69,33 +73,37 @@ public class InterfaceGrafica {
         }
 
         try {
-            // Contando as buscas pelo índice
-            int qtdBuscaIndice = indice.chaveBusca(chave);
+            // Extração dos valores dos JTextField corretamente
+            int novoTamanhoPagina = !tamanhoPaginaField.getText().trim().isEmpty() ? Integer.parseInt(tamanhoPaginaField.getText().trim()) : indice.getPaginasLength();
+            int novoTamanhoBucket = !tamanhoBucketField.getText().trim().isEmpty() ? Integer.parseInt(tamanhoBucketField.getText().trim()) : indice.getBucketsLength();
 
-            // Contando as buscas pelo table scan
+            // Atualiza o IndiceHash caso os tamanhos tenham sido alterados
+            if (novoTamanhoPagina != indice.getPaginasLength() || novoTamanhoBucket != indice.getBucketsLength()) {
+                indice = new IndiceHash("C:\\Users\\Luan\\Documents\\Banco de dados\\words.txt", novoTamanhoPagina, novoTamanhoBucket);
+            }
+
+            int qtdBuscaIndice = indice.chaveBusca(chave);
             int qtdBuscaTabela = indice.tableScan(chave);
 
-            // Calcula as taxas de colisões e overflow
-            double taxaColisoes = 100 * (double) indice.getNColisoes() / indice.getNumRegistros();
+            double taxaColisoes = 100 * (double) indice.getNColisoes() / indice.getPaginasLength();
             double taxaOverflow = 100 * (double) indice.getNBucketOverflow() / indice.getBucketsLength();
 
-            // Exibe os resultados na área de texto
             String resultadoBusca = "Busca pelo Índice:\n";
-            resultadoBusca += "Chave encontrada após " + qtdBuscaIndice + " buscas no índice.\n";
+            resultadoBusca += "Chave encontrada após " + qtdBuscaIndice + " páginas no índice.\n";
             resultadoBusca += "\nBusca pelo Table Scan:\n";
-            resultadoBusca += "Chave encontrada após " + qtdBuscaTabela + " buscas na tabela.\n";
+            resultadoBusca += "Chave encontrada após " + qtdBuscaTabela + " páginas na tabela.\n";
             resultadoBusca += String.format("\nTaxa de Colisões = %.6f%%\n", taxaColisoes);
             resultadoBusca += String.format("Taxa de Buckets Overflow = %.6f%%\n", taxaOverflow);
             resultArea.setText(resultadoBusca);
 
+        } catch (NumberFormatException e) {
+            resultArea.setText("Erro: Certifique-se de inserir números válidos para os tamanhos.");
         } catch (Exception e) {
             try {
-                // Caso o índice falhe, fazemos a busca completa no table scan
                 int qtdBuscaTabela = indice.tableScan(chave);
-                double taxaColisoes = 100 * (double) indice.getNColisoes() / indice.getNumRegistros();
+                double taxaColisoes = 100 * (double) indice.getNColisoes() / indice.getPaginasLength();
                 double taxaOverflow = 100 * (double) indice.getNBucketOverflow() / indice.getBucketsLength();
 
-                // Exibe os resultados do table scan na área de texto
                 String resultadoBusca = "Chave não encontrada no índice. Busca completa na tabela realizada após " + qtdBuscaTabela + " buscas.\n";
                 resultadoBusca += String.format("Taxa de Colisões = %.6f%%\n", taxaColisoes);
                 resultadoBusca += String.format("Taxa de Buckets Overflow = %.6f%%\n", taxaOverflow);
