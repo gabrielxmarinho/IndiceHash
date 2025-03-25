@@ -83,16 +83,9 @@ public class IndiceHash {
             e.printStackTrace();
         }
     }
-
-    // Função hash agora utiliza o número atualizado de buckets
+    
     public int funcaoHash(String chaveBusca) {
-        int a = chaveBusca.length() > 0 ? chaveBusca.charAt(0) * 31 : 0;
-        int b = chaveBusca.length() > 1 ? chaveBusca.charAt(1) * 17 : 0;
-        int c = chaveBusca.length() > 2 ? chaveBusca.charAt(2) * 13 : 0;
-        int d = chaveBusca.length() > 3 ? chaveBusca.charAt(3) * 7  : 0;
-
-        int hash = (a + b + c + d) * 33;
-        return Math.abs(hash) % numBuckets;  // Usa o valor atualizado
+        return Math.abs(chaveBusca.hashCode())%(buckets.length);
     }
 
     // Getter para nColisoes
