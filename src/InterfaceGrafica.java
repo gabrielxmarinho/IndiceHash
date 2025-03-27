@@ -30,7 +30,7 @@ public class InterfaceGrafica {
         int tamanhoBucket = !tamanhoBucketField.getText().trim().isEmpty() ? Integer.parseInt(tamanhoBucketField.getText().trim()) : 10;
 
         // Criação do objeto IndiceHash com valores válidos
-        indice = new IndiceHash("C:\\Users\\User\\Downloads\\words.txt", tamanhoPagina, tamanhoBucket);
+        indice = new IndiceHash("C:\\Users\\alunod14\\Downloads\\words.txt", tamanhoPagina, tamanhoBucket);
 
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new GridLayout(7, 1, 10, 10));
@@ -79,7 +79,7 @@ public class InterfaceGrafica {
 
             // Atualiza o IndiceHash caso os tamanhos tenham sido alterados
             if (novoTamanhoPagina != indice.getPaginasLength() || novoTamanhoBucket != indice.getBucketsLength()) {
-                indice = new IndiceHash("C:\\Users\\User\\Downloads\\words.txt", novoTamanhoPagina, novoTamanhoBucket);
+                indice = new IndiceHash("C:\\Users\\alunod14\\Downloads\\words.txt", novoTamanhoPagina, novoTamanhoBucket);
             }
 
             int qtdBuscaIndice = indice.chaveBusca(chave);

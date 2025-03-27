@@ -47,6 +47,7 @@ public class IndiceHash {
                     novaPagina.getTuplas().add(new Tupla(linha));
                     tabela.getPaginas().add(novaPagina);
                 } else {
+                    this.nColisoes++;
                     int bucketIndex = buckets[hash].size() - 1;
                     int paginaIndex = buckets[hash].get(bucketIndex).getNumerosPaginas().get(buckets[hash].get(bucketIndex).getNumerosPaginas().size() - 1);
                     
@@ -65,7 +66,6 @@ public class IndiceHash {
                             Pagina novaPagina = new Pagina();
                             novaPagina.getTuplas().add(new Tupla(linha));
                             tabela.getPaginas().add(novaPagina);
-                            this.nColisoes++;
                         }
                     }
                 }
